@@ -14,15 +14,21 @@ router.get('/', (req, res) => {
 });
 
 // GET post by ID
-router.get('/:id', (req, res) => {
+router.get('/:id', (req, res, next) => {
   try {
-    const post = posts.find((p) => p.id == req.params.id);
-    if (post) res.json(post);
-    next();
+    const post = posts.find((p) => p.id === parseInt(req.params.id));
+    if (!post) {
+      // Post not found, send 404 response
+      return res.status(404).send('Post not found');
+    }
+    res.json(post);
   } catch (error) {
+    // Handle errors
     console.error(error);
+    next(error);
   }
 });
+
 
 // POST new post
 router.post('/', (req, res) => {

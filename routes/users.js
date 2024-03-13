@@ -14,15 +14,21 @@ router.get('/', (req, res) => {
 });
 
 // GET user by ID
-router.get('/:id', (req, res) => {
+router.get('/:id', (req, res, next) => {
   try {
-    const user = users.find((u) => u.id == req.params.id);
-    if (user) res.json(user);
-    next();
+    const user = users.find((u) => u.id === parseInt(req.params.id));
+    if (!user) {
+      // User not found, send 404 response
+      return res.status(404).send('User not found');
+    }
+    res.json(user);
   } catch (error) {
+    // Handle errors
     console.error(error);
+    next(error);
   }
 });
+
 
 // POST new user
 router.post('/', (req, res) => {
