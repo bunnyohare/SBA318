@@ -3,13 +3,10 @@ const app = express();
 const port = 5005;
 const bodyParser = require("body-parser");
 const userRoutes = require("./routes/users");
-//const postRoutes = require("./routes/post");
+const postRoutes = require("./routes/posts");
 
 app.use("/user", userRoutes);
-//app.use("/post", postRoutes);
-
-//const users = require("./data/users");
-//const posts = require("./data/posts");
+app.use("/post", postRoutes);
 
 
 const logReq = function (req, res, next) {
@@ -30,24 +27,24 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ extended: true }));
 
 app.use('/api/user', userRoutes);
-//.use('/api/post', postRoutes);
+app.use('/api/post', postRoutes);
 
 app.get("/", (req, res) => {
   res.send("Work in progress");
 });
 
 
-//GET all Posts
-app.get("/api/posts", (req, res) => {
-  res.json(posts);
-});
+// //GET all Posts
+// app.get("/api/posts", (req, res) => {
+//   res.json(posts);
+// });
 
-//GET Post by id
-app.get("/api/posts/:id", (req, res, next) => {
-  const post = posts.find((p) => p.id == req.params.id);
-  if (post) res.json(post);
-  else next();
-});
+// //GET Post by id
+// app.get("/api/posts/:id", (req, res, next) => {
+//   const post = posts.find((p) => p.id == req.params.id);
+//   if (post) res.json(post);
+//   else next();
+// });
 
 //Lesson error handling middleware
 app.use((req, res) => {
