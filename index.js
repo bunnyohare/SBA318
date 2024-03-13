@@ -2,25 +2,35 @@ const express = require("express");
 const app = express();
 const port = 5005;
 const bodyParser = require("body-parser");
-const userRoutes = require("./routes/user");
+const userRoutes = require("./routes/users");
 //const postRoutes = require("./routes/post");
+
 app.use("/user", userRoutes);
 //app.use("/post", postRoutes);
 
-const users = require("./data/users");
-const posts = require("./data/posts");
+//const users = require("./data/users");
+//const posts = require("./data/posts");
 
 
-// // DOCS error handling Middleware
-// app.use((err, req, res, next) => {
-//   console.error(err.stack);
-//   res.status(404).json({ error: `Resource not found` });
-// });
+const logReq = function (req, res, next) {
+  console.log("Request Received");
+  next();
+};
+
+app.use(logReq);
+
+  // error handler use this in SBA for error handling middleware
+  app.use((err, req, res, next) => {
+    res.status(400).send(err.message);
+  });
 
 //MIDDLEWARE
 //BodyParser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ extended: true }));
+
+app.use('/api/user', userRoutes);
+//.use('/api/post', postRoutes);
 
 app.get("/", (req, res) => {
   res.send("Work in progress");
