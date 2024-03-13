@@ -33,7 +33,7 @@ router.get('/:id', (req, res, next) => {
 // POST new post
 router.post('/', (req, res) => {
   if (req.body.userId && req.body.title && req.body.content) {
-    if (post.find((p) => p.title == req.body.title)) {
+    if (posts.find((p) => p.title == req.body.title)) {
       res.json({ error: `title already taken` });
       return;
     }
