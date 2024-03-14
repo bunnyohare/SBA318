@@ -29,7 +29,22 @@ router.get('/:id', (req, res, next) => {
   }
 });
 
-
+// GET posts by userId
+router.get('/user/:userId', (req, res, next) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const filteredPosts = posts.filter((post) => post.userId === userId);
+    if (filteredPosts.length === 0) {
+      // No posts found for the given userId, send 404 response
+      return res.status(404).send('No posts found for the given userId');
+    }
+    res.json(filteredPosts);
+  } catch (error) {
+    // Handle errors
+    console.error(error);
+    next(error);
+  }
+});
 // POST new post
 router.post('/', (req, res) => {
   if (req.body.userId && req.body.title && req.body.content) {
