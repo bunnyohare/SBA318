@@ -4,10 +4,11 @@ const port = 5005;
 const bodyParser = require("body-parser");
 const userRoutes = require("./routes/users");
 const postRoutes = require("./routes/posts");
+const commentRoutes = require("./routes/comments");
 
 app.use("/user", userRoutes);
 app.use("/post", postRoutes);
-
+app.use("/comment", commentRoutes);
 
 const logReq = function (req, res, next) {
   console.log("Request Received");
@@ -24,6 +25,7 @@ app.use(bodyParser.json({ extended: true }));
 
 app.use('/api/user', userRoutes);
 app.use('/api/post', postRoutes);
+app.use('/api/comment', commentRoutes);
 
 app.get("/", (req, res) => {
   res.send("Work in progress");
