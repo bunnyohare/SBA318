@@ -10,12 +10,18 @@ const users = [
     "name": "Mikoto",
     "username": "Miiko",
     "email": "mikoto_u@example.com"
-},
+  },
   {
     "id": 3,
     "name": "Ronald",
     "username": "RonRonRon",
     "email": "mronald@example.com"
+  },
+  {
+    "id": 4,
+    "name": "Muffins",
+    "username": "PurryGirl",
+    "email": "cat@purr.com"
   }
 ];
 

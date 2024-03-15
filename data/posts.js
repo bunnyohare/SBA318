@@ -28,7 +28,7 @@ const posts = [
     "userId": 2,
     "title": "a quo magni similique perferendis",
     "content": "alias dolor cumque\nimpedit blanditiis non eveniet odio maxime\nblanditiis amet eius quis tempora quia autem rem\na provident perspiciatis quia"
-},
+  },
   {
     "id": 6,
     "userId": 2,
@@ -52,6 +52,12 @@ const posts = [
     "userId": 3,
     "title": "magnam ut rerum iure",
     "content": "ea velit perferendis earum ut voluptatem voluptate itaque iusto\ntotam pariatur in\nnemo voluptatem voluptatem autem magni tempora minima in\nest distinctio qui assumenda accusamus dignissimos officia nesciunt nobis"
+  },
+  {
+    "id": 10,
+    "userId": "3",
+    "title": "Wow, cats are awesome!",
+    "content": "This is the body of my newest cat post"
   }
 ];
 

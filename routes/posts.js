@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const posts = require("../data/posts");
 const fs = require('fs');
+const path = require("path");
 
 // middleware that is specific to this router
 router.use((req, res, next) => {
@@ -17,24 +18,40 @@ router
   })
   .post((req, res) => {
     if (req.body.userId && req.body.title && req.body.content) {
-      if (posts.find((p) => p.title == req.body.title)) {
-        res.json({ error: `title already taken` });
-        return;
+        if (posts.find((p) => p.title == req.body.title)) {
+            res.json({ error: `Title already taken` });
+            return;
+        }
+            const newPost = {
+                id: posts[posts.length - 1].id + 1,
+                userId: req.body.userId,
+                title: req.body.title,
+                content: req.body.content,
+            };
+            posts.push(newPost);
+
+
+        // Read existing posts data
+        fs.writeFile(
+          path.join(__dirname, "../data/posts.js"),
+          `const posts = ${JSON.stringify(
+            posts,
+            null,
+            2
+          )};\n\nmodule.exports = posts;`,
+          (err) => {
+            if (err) {
+              console.error("Error writing to posts file:", err);
+              return res.status(500).json({ error: "Error adding post" });
+            }
+            // Returning the newly added user
+            res.json(newPost);
+          }
+        );
+      } else {
+        res.json({ error: "Insufficient Data" });
       }
-
-      const newPost = {
-        id: posts[posts.length - 1].id + 1,
-        userId: req.body.userId,
-        title: req.body.title,
-        content: req.body.content,
-      };
-
-      posts.push(newPost);
-      res.json(posts[posts.length - 1]);
-    } else {
-      res.json({ error: "Insufficient Data" });
-    }
-  });
+    });
 
 // Route for /post/ID_OF_POST
 router

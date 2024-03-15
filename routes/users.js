@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const users = require("../data/users");
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 // middleware that is specific to this router
 router.use((req, res, next) => {
@@ -31,7 +31,23 @@ router
       };
 
       users.push(newUser);
-      res.json(users[users.length - 1]);
+      // Writing the updated users array back to the file
+      fs.writeFile(
+        path.join(__dirname, "../data/users.js"),
+        `const users = ${JSON.stringify(
+          users,
+          null,
+          2
+        )};\n\nmodule.exports = users;`,
+        (err) => {
+          if (err) {
+            console.error("Error writing to users file:", err);
+            return res.status(500).json({ error: "Error adding user" });
+          }
+          // Returning the newly added user
+          res.json(newUser);
+        }
+      );
     } else {
       res.json({ error: "Insufficient Data" });
     }
@@ -54,10 +70,10 @@ router
       next(error);
     }
   })
-  
+
   .delete((req, res) => {
     const userId = parseInt(req.params.id);
-    const index = users.findIndex(user => user.id === userId);
+    const index = users.findIndex((user) => user.id === userId);
 
     if (index === -1) {
       return res.status(404).send("User not found");
@@ -67,15 +83,22 @@ router
     const deletedUser = users.splice(index, 1)[0];
 
     // Save the updated users array to the file
-    fs.writeFile('./data/users.js', `const users = ${JSON.stringify(users, null, 2)};\n\nmodule.exports = users;`, (err) => {
-      if (err) {
-        console.error("Error writing to users file:", err);
-        return res.status(500).json({ error: "Error deleting user" });
+    fs.writeFile(
+      "./data/users.js",
+      `const users = ${JSON.stringify(
+        users,
+        null,
+        2
+      )};\n\nmodule.exports = users;`,
+      (err) => {
+        if (err) {
+          console.error("Error writing to users file:", err);
+          return res.status(500).json({ error: "Error deleting user" });
+        }
+        // Return the deleted user
+        res.json(deletedUser);
       }
-      // Return the deleted user
-      res.json(deletedUser);
-    });
+    );
   });
-
 
 module.exports = router;

@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const comments = require("../data/comments");
+const fs = require('fs');
+const path = require("path");
+
 
 // middleware that is specific to this router
 router.use((req, res, next) => {
@@ -16,25 +19,42 @@ router
   })
   .post((req, res) => {
     if (req.body.postId && req.body.name && req.body.email && req.body.body) {
-      if (comments.find((c) => c.email == req.body.email)) {
-        res.json({ error: `Already commented.` });
-        return;
+        if (comments.find((c) => c.email == req.body.email)) {
+            res.json({ error: `One comment per email address.` });
+            return;
+        }
+            const newComment = {
+                postId: req.body.postId,
+                id: comments[comments.length - 1].id + 1,
+                id: req.body.id,
+                name: req.body.name,
+                email: req.body.email,
+                body: req.body.body
+            };
+            comments.push(newComment);
+
+
+        // Read existing posts data
+        fs.writeFile(
+          path.join(__dirname, "../data/comments.js"),
+          `const comments = ${JSON.stringify(
+            comments,
+            null,
+            2
+          )};\n\nmodule.exports = comments;`,
+          (err) => {
+            if (err) {
+              console.error("Error writing to comments file:", err);
+              return res.status(500).json({ error: "Error adding comment" });
+            }
+            // Returning the newly added user
+            res.json(newComment);
+          }
+        );
+      } else {
+        res.json({ error: "Insufficient Data" });
       }
-
-      const newComment = {
-        postId: req.body.postId,
-        id: comments[comments.length - 1].id + 1,
-        name: req.body.name,
-        email: req.body.email,
-        body: req.body.body,
-      };
-
-      comments.push(newComment);
-      res.json(comments[comments.length - 1]);
-    } else {
-      res.json({ error: "Insufficient Data" });
-    }
-  });
+    });
 
 // Route for /comment/ID_OF_COMMENT
 router
