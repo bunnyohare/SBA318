@@ -9,10 +9,6 @@ const cors = require("cors"); // Import the cors module
 
 app.use(cors()); // Enable CORS for all routes
 
-app.use("/user", userRoutes);
-app.use("/post", postRoutes);
-app.use("/comment", commentRoutes);
-
 const logReq = function (req, res, next) {
   console.log("Request Received");
   next();
@@ -20,9 +16,6 @@ const logReq = function (req, res, next) {
 
 app.use(logReq);
 
-
-//MIDDLEWARE
-//BodyParser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ extended: true }));
 
