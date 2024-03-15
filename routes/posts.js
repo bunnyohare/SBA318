@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const posts = require("../data/posts");
+const fs = require('fs');
 
 // middleware that is specific to this router
 router.use((req, res, next) => {
@@ -53,16 +54,26 @@ router
     }
   })
   .delete((req, res) => {
-    const post = posts.find((p, i) => {
-      if (p.id == req.params.id) {
-        posts.splice(i, 1);
-        return true;
-      }
-    });
-    if (post) res.json(post);
-    else next();
-  });
+    const postId = parseInt(req.params.id);
+    const index = posts.findIndex(post => post.id === postId);
 
+    if (index === -1) {
+      return res.status(404).send("Post not found");
+    }
+
+    // Remove the post from the posts array
+    const deletedPost = posts.splice(index, 1)[0];
+
+    // Save the updated posts array to the file
+    fs.writeFile('./data/posts.js', `const posts = ${JSON.stringify(posts, null, 2)};\n\nmodule.exports = posts;`, (err) => {
+      if (err) {
+        console.error("Error writing to file:", err);
+        return res.status(500).json({ error: "Error deleting post" });
+      }
+      // Return the deleted post
+      res.json(deletedPost);
+    });
+  });
 // Route for /posts/user/ID_OF_USER where posts are filtered by userId
 router.route("/user/:userId").get((req, res, next) => {
   try {

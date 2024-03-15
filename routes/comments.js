@@ -54,14 +54,25 @@ router
     }
   })
   .delete((req, res) => {
-    const comment = comments.find((p, i) => {
-      if (p.id == req.params.id) {
-        comments.splice(i, 1);
-        return true;
+    const commentId = parseInt(req.params.id);
+    const index = comments.findIndex(comment => comment.id === commentId);
+
+    if (index === -1) {
+      return res.status(404).send("Comment not found");
+    }
+
+    // Remove the user from the users array
+    const deletedComment = comments.splice(index, 1)[0];
+
+    // Save the updated users array to the file
+    fs.writeFile('./data/comments.js', `const comments = ${JSON.stringify(comments, null, 2)};\n\nmodule.exports = comments;`, (err) => {
+      if (err) {
+        console.error("Error writing to comments file:", err);
+        return res.status(500).json({ error: "Error deleting comment" });
       }
+      // Return the deleted comment
+      res.json(deletedComment);
     });
-    if (comment) res.json(comment);
-    else next();
   });
 
 module.exports = router;

@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const users = require("../data/users");
+const fs = require('fs');
+const path = require('path');
 
 // middleware that is specific to this router
 router.use((req, res, next) => {
@@ -52,16 +54,28 @@ router
       next(error);
     }
   })
+  
   .delete((req, res) => {
-    const user = users.find((u, i) => {
-      if (u.id == req.params.id) {
-        users.splice(i, 1);
-        return true;
-      }
-    });
+    const userId = parseInt(req.params.id);
+    const index = users.findIndex(user => user.id === userId);
 
-    if (user) res.json(user);
-    else next();
+    if (index === -1) {
+      return res.status(404).send("User not found");
+    }
+
+    // Remove the user from the users array
+    const deletedUser = users.splice(index, 1)[0];
+
+    // Save the updated users array to the file
+    fs.writeFile('./data/users.js', `const users = ${JSON.stringify(users, null, 2)};\n\nmodule.exports = users;`, (err) => {
+      if (err) {
+        console.error("Error writing to users file:", err);
+        return res.status(500).json({ error: "Error deleting user" });
+      }
+      // Return the deleted user
+      res.json(deletedUser);
+    });
   });
+
 
 module.exports = router;
