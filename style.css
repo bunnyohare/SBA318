@@ -15,4 +15,5 @@
 #content {
     border: 2px solid #354F52; /* Border color */
     padding: 20px;
+    text-align: left;
 }

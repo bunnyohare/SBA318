@@ -8,60 +8,60 @@ router.use((req, res, next) => {
   next();
 });
 
-// GET all comments
-router.get('/', (req, res) => {
-  res.json(comments);
-});
+// route for /comment
+router
+  .route("/")
+  .get((req, res) => {
+    res.json(comments);
+  })
+  .post((req, res) => {
+    if (req.body.postId && req.body.name && req.body.email && req.body.body) {
+      if (comments.find((c) => c.email == req.body.email)) {
+        res.json({ error: `Already commented.` });
+        return;
+      }
 
-// GET COMMENT by ID
-router.get('/:id', (req, res, next) => {
-  try {
-    const comment = comments.find((p) => p.id === parseInt(req.params.id));
-    if (!comment) {
-      // Comment not found, send 404 response
-      return res.status(404).send('Post not found');
-    }
-    res.json(comment);
-  } catch (error) {
-    // Handle errors
-    console.error(error);
-    next(error);
-  }
-});
+      const newComment = {
+        postId: req.body.postId,
+        id: comments[comments.length - 1].id + 1,
+        name: req.body.name,
+        email: req.body.email,
+        body: req.body.body,
+      };
 
-
-// POST new Comment one comment per email address
-router.post('/', (req, res) => {
-  if (req.body.postId && req.body.Name && req.body.email && req.body.body) {
-    if (comments.find((p) => p.email == req.body.email)) {
-      res.json({ error: `Already commented.` });
-      return;
-    }
-
-    const newComment = {
-      id: comments[comments.length - 1].id + 1,
-      postId: req.body.postId,
-      email: req.body.email,
-      body: req.body.body,
-    };
-
-    comments.push(newComment);
-    res.json(comments[comments.length - 1]);
-  } else {
-    res.json({ error: "Insufficient Data" });
-  }
-});
-
-// DELETE Comment 
-router.delete('/:id', (req, res) => {
-  const comment = comments.find((p, i) => {
-    if (p.id == req.params.id) {
-        comments.splice(i, 1);
-      return true;
+      comments.push(newComment);
+      res.json(comments[comments.length - 1]);
+    } else {
+      res.json({ error: "Insufficient Data" });
     }
   });
-  if (comment) res.json(comment);
-  else next();
-});
+
+// Route for /comment/ID_OF_COMMENT
+router
+  .route("/:id")
+  .get((req, res, next) => {
+    try {
+      const comment = comments.find((p) => p.id === parseInt(req.params.id));
+      if (!comment) {
+        // Comment not found, send 404 response
+        return res.status(404).send("Post not found");
+      }
+      res.json(comment);
+    } catch (error) {
+      // Handle errors
+      console.error(error);
+      next(error);
+    }
+  })
+  .delete((req, res) => {
+    const comment = comments.find((p, i) => {
+      if (p.id == req.params.id) {
+        comments.splice(i, 1);
+        return true;
+      }
+    });
+    if (comment) res.json(comment);
+    else next();
+  });
 
 module.exports = router;
